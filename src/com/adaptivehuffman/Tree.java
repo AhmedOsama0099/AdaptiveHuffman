@@ -11,11 +11,12 @@ public class Tree {
     public Tree() {
         root.id = 100;
         seq = "";
-        arr.add(new ShortCodeModel('A', "00"));
-        arr.add(new ShortCodeModel('B', "01"));
-        arr.add(new ShortCodeModel('C', "10"));
-        arr.add(new ShortCodeModel('D', "11"));
-
+        arr.add(new ShortCodeModel('A', "a"));
+        arr.add(new ShortCodeModel('B', "b"));
+        arr.add(new ShortCodeModel('C', "c"));
+        arr.add(new ShortCodeModel('D', "d"));
+        arr.add(new ShortCodeModel('E', "e"));
+        arr.add(new ShortCodeModel('F', "f"));
     }
 
     public int searchIndex(char symbol) {
@@ -66,11 +67,13 @@ public class Tree {
         temp = currNode.id;
         currNode.id = swapNode.id;
         swapNode.id = temp;
-        if (currNode.parent == root && swapNode.parent == root) {
-            tempNode = currNode;
-            root.left=swapNode;
-            root.right=tempNode;
-        } else {
+         if(Math.abs(currNode.id-swapNode.id)==1){
+             Node parent=currNode.parent;
+             tempNode = currNode;
+             parent.left=swapNode;
+             parent.right=tempNode;
+         }
+        else {
 
         }
     }
@@ -81,10 +84,10 @@ public class Tree {
         if (check.count == 1) {
             while (check != root) {
                 check.parent.count++;
+
                 check = check.parent;
-            }
-            if (root.left.count > root.right.count) {
-                swap(root.left, root.right);
+                if(check.left.count>check.right.count)
+                    swap(check.left,check.right);
             }
         }
     }
