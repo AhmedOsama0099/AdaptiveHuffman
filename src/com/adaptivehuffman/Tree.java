@@ -11,12 +11,12 @@ public class Tree {
     public Tree() {
         root.id = 100;
         seq = "";
-        arr.add(new ShortCodeModel('A', "a"));
-        arr.add(new ShortCodeModel('B', "b"));
-        arr.add(new ShortCodeModel('C', "c"));
-        arr.add(new ShortCodeModel('D', "d"));
-        arr.add(new ShortCodeModel('E', "e"));
-        arr.add(new ShortCodeModel('F', "f"));
+        arr.add(new ShortCodeModel('A', "00"));
+        arr.add(new ShortCodeModel('B', "01"));
+        arr.add(new ShortCodeModel('C', "10"));
+        arr.add(new ShortCodeModel('D', "11"));
+        arr.add(new ShortCodeModel('E', "100"));
+        arr.add(new ShortCodeModel('F', "101"));
     }
 
     public int searchIndex(char symbol) {
@@ -39,7 +39,7 @@ public class Tree {
         }
         Node current = search(symbol);
         if (current.symbol == symbol) {
-            seq += curCode;
+            seq += " "+curCode;
             curCode = "";
             current.count++;
         } else {
@@ -54,9 +54,9 @@ public class Tree {
         current.left.parent = current;
         current.right = new Node(symbol, current.id - 1, 1);
         current.right.parent = current;
-        seq += curCode;
+        seq += " "+curCode;
         curCode = "";
-        seq += arr.get(searchIndex(symbol)).getShortCode();
+        seq +=" "+ arr.get(searchIndex(symbol)).getShortCode();
         current = current.right;
         return current;
     }
@@ -67,60 +67,108 @@ public class Tree {
         temp = currNode.id;
         currNode.id = swapNode.id;
         swapNode.id = temp;
-         if(Math.abs(currNode.id-swapNode.id)==1){
-             Node parent=currNode.parent;
-             tempNode = currNode;
-             parent.left=swapNode;
-             parent.right=tempNode;
-         }
+        if(Math.abs(currNode.id-swapNode.id)==1){
+            Node parent=currNode.parent;
+            tempNode = currNode;
+            parent.left=swapNode;
+            parent.right=tempNode;
+        }
         else {
-
+            if(currNode.parent.left==currNode){
+                currNode.parent.left=swapNode;
+                if(swapNode.parent.right==swapNode)
+                    swapNode.parent.right=currNode;
+                else
+                    swapNode.parent.left=currNode;
+                Node parentTemp=swapNode.parent;
+                swapNode.parent=currNode.parent;
+                currNode.parent=parentTemp;
+            }
+            else {
+                currNode.parent.right=swapNode;
+                if(swapNode.parent.right==swapNode)
+                    swapNode.parent.right=currNode;
+                else
+                    swapNode.parent.left=currNode;
+                Node parentTemp=swapNode.parent;
+                swapNode.parent=currNode.parent;
+                currNode.parent=parentTemp;
+            }
         }
     }
 
     private void updateTree(Node current) {
-        Node check = new Node();
+        Node check;
         check = current;
         if (check.count == 1) {
             while (check != root) {
                 check.parent.count++;
-
                 check = check.parent;
                 if(check.left.count>check.right.count)
                     swap(check.left,check.right);
             }
         }
+        else {
+            Node check2=root;
+            while(true){
+                if(check2.left.symbol!=Character.MIN_VALUE){
+                    if(check2.left==current)
+                        break;
+                    if(check2.left.count<current.count ) {
+                        swap(check2.left, current);
+                        break;
+                    }
+                    else{
+                        check2=check2.right;
+                    }
+                }
+                else {
+                    if(check2.right==current)
+                        break;
+                    if(check2.right.count<current.count) {
+                        swap(check2.right, current);
+                        break;
+                    }
+                    else{
+                        check2=check2.left;
+                    }
+                }
+            }
+            while (check != root) {
+                check.parent.count=check.parent.left.count+check.parent.right.count;
+                check = check.parent;
+                if(check.left.count>check.right.count) {
+                    swap(check.left, check.right);
+                }
+            }
+        }
     }
 
     public Node search(char symbol) {
-        Node current = new Node();
-        current = root;
+        Node current = root;
         while (current != null) {
             if (current.left.symbol == Character.MIN_VALUE) {
                 if (current.right.symbol == symbol) {
                     curCode += '1';
-                    return current;
+                    return current.right;
                 } else {
                     curCode += '0';
                     current = current.left;//Not last NYT
                     if (current.left == null && current.right == null)//last NYT
                         return current;
-
                 }
             } else {
                 if (current.left.symbol == symbol) {
                     curCode += '0';
-                    return current;
+                    return current.left;
                 } else {
                     curCode += '1';
                     current = current.right;//Not last NYT
                     if (current.left == null && current.right == null)//last NYT
                         return current;
-
                 }
             }
         }
-
         return null;
     }
 }
