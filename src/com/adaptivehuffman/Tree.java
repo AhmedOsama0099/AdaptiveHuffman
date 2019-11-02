@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 public class Tree {
     Node root = new Node();
-    String seq;
+    String seq="";
+
     static String curCode = "";
     ArrayList<ShortCodeModel> arr = new ArrayList<>();
+    Node lastNYT=null;
+    boolean choice=true;
     public Tree() {
         root.id = 100;
         seq = "";
@@ -25,37 +28,80 @@ public class Tree {
         }
         return -1;
     }
+    public int searcByCode(String code){
+        for (int i = 0; i < arr.size(); i++) {
+            if (arr.get(i).getShortCode() .equals(code))
+                return i;
+        }
+        return -1;
+    }
 
     public void add(char symbol) {
         if (root.left == null && root.right == null) {
             root.count++;
             root.left = new Node(Character.MIN_VALUE, root.id - 2, 0);
             root.left.parent = root;
+            if(!choice){/**deCompress**/
+                lastNYT=root.left;
+                seq+=symbol;
+            }
             root.right = new Node(symbol, root.id - 1, 1);
             root.right.parent = root;
-            seq += arr.get(searchIndex(symbol)).getShortCode();
+            if(choice)
+                seq += arr.get(searchIndex(symbol)).getShortCode();
             return;
         }
         Node current = search(symbol);
         if (current.symbol == symbol) {
-            seq += " "+curCode;
-            curCode = "";
+            if (choice){/**Compress**/
+                seq +=curCode;
+                curCode = "";
+            }
+            else{
+                seq+=symbol;
+            }
             current.count++;
         } else {
             current=splitTree(current, symbol);
         }
 
         updateTree(current);
+        /*if(!choice)
+            System.out.println(lastNYT.id+" "+getLastNYTCode());*/
+    }
+
+    public String getLastNYTCode() {
+        String NYTCode="";
+        Node current=root;
+        while (current!=lastNYT){
+            if(current.left.symbol==Character.MIN_VALUE){
+                NYTCode+='0';
+                current=current.left;
+            }
+            else {
+                NYTCode+='1';
+                current=current.right;
+            }
+        }
+        return NYTCode;
     }
 
     private Node splitTree(Node current, char symbol) {//for first time
         current.left = new Node(Character.MIN_VALUE, current.id - 2, 0);
         current.left.parent = current;
+        if(!choice)/**deCompress**/
+            lastNYT=current.left;
         current.right = new Node(symbol, current.id - 1, 1);
         current.right.parent = current;
-        seq += " "+curCode;
-        curCode = "";
-        seq +=" "+ arr.get(searchIndex(symbol)).getShortCode();
+        if(choice){/**Compress**/
+            seq +=curCode;
+            seq +=arr.get(searchIndex(symbol)).getShortCode();
+            curCode = "";
+        }
+        else{
+            seq+=symbol;
+        }
+
         current = current.right;
         return current;
     }
@@ -66,7 +112,7 @@ public class Tree {
         temp = currNode.id;
         currNode.id = swapNode.id;
         swapNode.id = temp;
-        if(Math.abs(currNode.id-swapNode.id)==1){
+        if(currNode.parent==swapNode.parent){
             Node parent=currNode.parent;
             tempNode = currNode;
             parent.left=swapNode;
@@ -79,6 +125,7 @@ public class Tree {
                     swapNode.parent.right=currNode;
                 else
                     swapNode.parent.left=currNode;
+
                 Node parentTemp=swapNode.parent;
                 swapNode.parent=currNode.parent;
                 currNode.parent=parentTemp;
@@ -148,20 +195,24 @@ public class Tree {
         while (current != null) {
             if (current.left.symbol == Character.MIN_VALUE) {
                 if (current.right.symbol == symbol) {
-                    curCode += '1';
+                    if(choice)/**Compress**/
+                        curCode += '1';
                     return current.right;
                 } else {
-                    curCode += '0';
+                    if(choice)/**Compress**/
+                        curCode += '0';
                     current = current.left;//Not last NYT
                     if (current.left == null && current.right == null)//last NYT
                         return current;
                 }
             } else {
                 if (current.left.symbol == symbol) {
-                    curCode += '0';
+                    if(choice)/**Compress**/
+                        curCode += '0';
                     return current.left;
                 } else {
-                    curCode += '1';
+                    if(choice)/**Compress**/
+                        curCode += '1';
                     current = current.right;//Not last NYT
                     if (current.left == null && current.right == null)//last NYT
                         return current;
@@ -169,5 +220,21 @@ public class Tree {
             }
         }
         return null;
+    }
+    public int searchSymbolCode(String remainingSeq){
+        int i=0;
+        Node current =root;
+        for(;i<remainingSeq.length();i++){
+            if(remainingSeq.charAt(i)=='1')
+                current=current.right;
+            else
+                current=current.left;
+
+            if(current.right==null&&current.left==null){
+                add(current.symbol);
+                break;
+            }
+        }
+        return (i+1);
     }
 }
