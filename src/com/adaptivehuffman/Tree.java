@@ -13,12 +13,19 @@ public class Tree {
     public Tree() {
         root.id = 100;
         seq = "";
-        arr.add(new ShortCodeModel('A', "00"));
+        /*arr.add(new ShortCodeModel('A', "00"));
         arr.add(new ShortCodeModel('B', "01"));
         arr.add(new ShortCodeModel('C', "10"));
         arr.add(new ShortCodeModel('D', "11"));
         arr.add(new ShortCodeModel('E', "100"));
-        arr.add(new ShortCodeModel('F', "101"));
+        arr.add(new ShortCodeModel('F', "101"));*/
+        for(int i=0;i<128;i++){
+            String code=Integer.toBinaryString(i);
+            while(code.length()<7)
+                code='0'+code;
+            arr.add(new ShortCodeModel((char)i,code));
+        }
+        System.out.println(arr.get(65).getSymbol()+" "+arr.get(65).getShortCode());
     }
 
     public int searchIndex(char symbol) {
