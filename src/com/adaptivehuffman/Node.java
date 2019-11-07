@@ -7,6 +7,7 @@ public class Node {
     char symbol;
     int id;
     int count;
+    String code="";
     public char getSymbol() {
         return symbol;
     }
@@ -19,10 +20,11 @@ public class Node {
         return count;
     }
 
-    public Node(char symbol, int id, int count) {
+    public Node(char symbol, int id, int count,String code) {
         this.symbol = symbol;
         this.id = id;
         this.count = count;
+        this.code=code;
     }
 
     public Node() {

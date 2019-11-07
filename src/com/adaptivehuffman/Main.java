@@ -25,7 +25,7 @@ public class Main {
                 Tree tree = new Tree();
                 tree.choice = false;
                 int currPositionInSeq = 0;
-                int symbolIndex = tree.searcByCode(seq.substring(currPositionInSeq, 7));/////////
+                int symbolIndex = tree.searchByCode(seq.substring(currPositionInSeq, 7));/////////
 
                 tree.add(tree.arr.get(symbolIndex).getSymbol());//add first char
                 currPositionInSeq += 7;//////after first char
@@ -35,7 +35,7 @@ public class Main {
                         //00 0 01
                         if (seq.substring(currPositionInSeq, currPositionInSeq+ lastNytCode.length()).equals(lastNytCode)) {
                             currPositionInSeq += lastNytCode.length();
-                            symbolIndex = tree.searcByCode(seq.substring(currPositionInSeq, currPositionInSeq+7));///////
+                            symbolIndex = tree.searchByCode(seq.substring(currPositionInSeq, currPositionInSeq+7));///////
                             tree.add(tree.arr.get(symbolIndex).getSymbol());
                             currPositionInSeq += 7;/////////
                         } else {
